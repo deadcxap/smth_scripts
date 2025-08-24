@@ -15,7 +15,7 @@ bash audit-net.sh [--full] [--no-smoke] [--smoke] [--port N]
 ## Run
 
 ```bash
-bash <(curl -sL https://github.com/deadcxap/smth_scripts/raw/master/audit-net.sh)
+bash <(curl -sL https://github.com/deadcxap/smth_scripts/raw/main/audit-net.sh)
 ```
 
 ---
