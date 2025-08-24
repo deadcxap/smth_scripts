@@ -78,7 +78,7 @@ if have ufw; then
   if grep -qi '^Status:\s*active' <<<"$UFW_STATUS_RAW"; then UFW_ACTIVE=1; fi
   UFW_IN_DEFAULT="$(grep -i '^Default:' <<<"$UFW_STATUS_RAW" | sed -E 's/^Default:\s*//I')"
   if (( UFW_ACTIVE )); then
-    if grep -qi 'deny *\(incoming\)' <<<"$UFW_IN_DEFAULT"; then
+    if grep -qiE '^Default:.*\bdeny[[:space:]]*\(incoming\)' <<<"$UFW_STATUS_RAW"; then
       ok "UFW default incoming = deny"
     else
       warn "UFW default incoming is NOT 'deny' → реальность может не совпасть с ожиданиями"
@@ -162,12 +162,12 @@ if (( SMOKE )); then
       SRV_PID=$!
       echo "Started http server (PID $SRV_PID) on 0.0.0.0:${PORT}"
       echo
-      echo "Проверьте с ДРУГОГО хоста (ожидание 60с, потом сервер сам выключится):"
+      echo "Проверьте с ДРУГОГО хоста (ожидание 10м, потом сервер сам выключится):"
       echo "  nc -vz ${IP} ${PORT}      # должно быть закрыто при 'deny incoming'"
       echo "  sudo ufw allow ${PORT}/tcp"
       echo "  nc -vz ${IP} ${PORT}      # теперь open"
-      # авто-стоп через 60 сек или по ENTER
-      { read -t 60 -r _ </dev/tty 2>/dev/null || true; } &
+      # авто-стоп через 10 мин или по ENTER
+      { read -t 600 -r _ </dev/tty 2>/dev/null || true; } &
       WAITER=$!
       wait "$WAITER" 2>/dev/null || true
       kill "$SRV_PID" 2>/dev/null || true
